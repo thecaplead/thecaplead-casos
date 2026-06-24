@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso de Éxito — The CAP Lead</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue: #2B5FD9; --blue-dark: #1A3E99;
+  --navy: #0D1B3E; --green: #00D4AA; --green-dim: #00a888;
+  --white: #FFFFFF; --off-white: #F7F9FC;
+  --gray-200: #E8ECF2; --gray-400: #8896A8; --gray-600: #4A5568; --gray-dark: #4A4A4A;
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: var(--off-white); color: var(--gray-dark); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(13,27,62,0.96); backdrop-filter: blur(12px); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { height: 30px; width: auto; }
+.nav-cta { display: inline-flex; align-items: center; gap: 8px; background: var(--green); color: var(--navy); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; padding: 8px 20px; border-radius: 100px; text-decoration: none; }
+
+.hero { background: linear-gradient(150deg, var(--navy) 0%, #0F2860 60%, #1A3E99 100%); min-height: 92vh; display: flex; flex-direction: column; justify-content: center; padding: 120px 24px 80px; position: relative; overflow: hidden; }
+.hero-glow { position: absolute; top: -200px; right: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(0,212,170,0.12) 0%, transparent 65%); pointer-events: none; }
+.hero-inner { max-width: 740px; margin: 0 auto; position: relative; z-index: 1; }
+.badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,212,170,0.12); border: 1px solid rgba(0,212,170,0.3); color: var(--green); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 16px; border-radius: 100px; margin-bottom: 28px; }
+.badge-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; }
+.hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(32px, 5vw, 54px); font-weight: 800; color: var(--white); line-height: 1.12; letter-spacing: -0.02em; margin-bottom: 24px; }
+.hero h1 em { font-style: normal; color: var(--green); }
+.hero-sub { font-size: 17px; color: rgba(255,255,255,0.6); max-width: 540px; margin-bottom: 48px; line-height: 1.65; }
+.hero-meta { display: flex; gap: 36px; flex-wrap: wrap; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1); }
+.meta-item { display: flex; flex-direction: column; gap: 4px; }
+.meta-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); }
+.meta-value { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; color: var(--white); }
+
+/* CAP pillars */
+.cap-bar { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+.cap-pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 100px; font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; }
+.cap-pill.c { background: rgba(0,212,170,0.15); color: var(--green); border: 1px solid rgba(0,212,170,0.3); }
+.cap-pill.a { background: rgba(43,95,217,0.15); color: #7BA3FF; border: 1px solid rgba(43,95,217,0.3); }
+.cap-pill.p { background: rgba(255,200,50,0.15); color: #F5C842; border: 1px solid rgba(255,200,50,0.3); }
+
+.section { max-width: 740px; margin: 0 auto; padding: 80px 24px; }
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; width: 32px; height: 1.5px; background: var(--blue); opacity: 0.4; }
+.section h2 { font-family: 'Sora', sans-serif; font-size: clamp(22px, 3.5vw, 34px); font-weight: 700; color: var(--navy); line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 20px; }
+.section p { font-size: 16px; color: var(--gray-600); margin-bottom: 16px; line-height: 1.8; }
+.section p:last-child { margin-bottom: 0; }
+.divider { border: none; height: 1px; background: var(--gray-200); max-width: 740px; margin: 0 auto; }
+
+.ab-section { background: var(--navy); padding: 80px 24px; }
+.ab-inner { max-width: 740px; margin: 0 auto; }
+.ab-inner .section-label { color: var(--green); }
+.ab-inner .section-label::after { background: var(--green); }
+.ab-inner h2 { font-family: 'Sora', sans-serif; font-size: clamp(22px, 3.5vw, 34px); font-weight: 700; color: var(--white); line-height: 1.2; margin-bottom: 40px; letter-spacing: -0.01em; }
+.ab-grid { display: grid; grid-template-columns: 1fr 1fr; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+.ab-col { padding: 28px 24px; }
+.ab-col.before { background: rgba(255,255,255,0.04); border-right: 1px solid rgba(255,255,255,0.07); }
+.ab-col.after { background: rgba(0,212,170,0.06); }
+.ab-col-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.ab-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.ab-dot.red { background: #FF6B6B; }
+.ab-dot.green { background: var(--green); }
+.ab-col-title { font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.ab-col.before .ab-col-title { color: rgba(255,255,255,0.45); }
+.ab-col.after .ab-col-title { color: var(--green); }
+.ab-item { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.ab-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.ab-dimension { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+.ab-col.before .ab-dimension { color: rgba(255,255,255,0.25); }
+.ab-col.after .ab-dimension { color: rgba(0,212,170,0.5); }
+.ab-text { font-size: 13px; line-height: 1.55; }
+.ab-col.before .ab-text { color: rgba(255,255,255,0.5); }
+.ab-col.after .ab-text { color: rgba(255,255,255,0.9); font-weight: 500; }
+
+/* CAP phases */
+.cap-phases { display: flex; flex-direction: column; gap: 0; margin-top: 36px; }
+.cap-phase { display: grid; grid-template-columns: 44px 1fr; gap: 0; align-items: stretch; }
+.cap-phase-left { display: flex; flex-direction: column; align-items: center; }
+.cap-phase-num { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+.cap-phase-num.c { background: rgba(0,212,170,0.15); color: var(--green); }
+.cap-phase-num.a { background: rgba(43,95,217,0.15); color: #7BA3FF; }
+.cap-phase-num.p { background: rgba(255,200,50,0.15); color: #F5C842; }
+.cap-phase-line { width: 2px; flex: 1; margin: 6px auto; min-height: 24px; }
+.cap-phase-line.c { background: rgba(0,212,170,0.2); }
+.cap-phase-line.a { background: rgba(43,95,217,0.2); }
+.cap-phase-line.p { background: rgba(255,200,50,0.2); }
+.cap-phase:last-child .cap-phase-line { display: none; }
+.cap-phase-content { padding: 0 0 32px 20px; }
+.cap-phase-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+.cap-phase-tag.c { color: var(--green); }
+.cap-phase-tag.a { color: #7BA3FF; }
+.cap-phase-tag.p { color: #F5C842; }
+.cap-phase-content h3 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.cap-phase-content p { font-size: 14px; color: var(--gray-600); margin-bottom: 0; line-height: 1.65; }
+.cap-phase-bullets { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.cap-phase-bullet { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--gray-600); }
+.cap-bullet-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--blue); flex-shrink: 0; margin-top: 7px; }
+
+.evidence-wrap { max-width: 740px; margin: 0 auto; padding: 0 24px 80px; }
+.evidence-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.evidence-label::after { content: ''; width: 32px; height: 1.5px; background: var(--blue); opacity: 0.4; }
+.evidence-caption { font-size: 14px; color: var(--gray-600); margin-bottom: 20px; line-height: 1.6; }
+.evidence-frame { border-radius: 16px; overflow: hidden; box-shadow: 0 12px 40px rgba(13,27,62,0.1); border: 1px solid var(--gray-200); max-width: 420px; }
+.evidence-frame img { width: 100%; display: block; }
+
+.results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 14px; margin-top: 36px; }
+.result-card { background: var(--white); border: 1px solid var(--gray-200); border-left: 3px solid var(--blue); border-radius: 14px; padding: 24px 20px; }
+.result-icon { font-size: 20px; margin-bottom: 12px; }
+.result-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.result-text { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); line-height: 1.4; }
+
+.quote-section { background: linear-gradient(135deg, var(--navy) 0%, #0F2860 100%); padding: 80px 24px; }
+.quote-inner { max-width: 580px; margin: 0 auto; text-align: center; }
+.quote-mark { font-family: 'Sora', sans-serif; font-size: 72px; line-height: 0.6; color: var(--green); opacity: 0.35; display: block; margin-bottom: 24px; }
+blockquote { font-family: 'Sora', sans-serif; font-size: clamp(16px, 2.5vw, 22px); font-weight: 600; color: var(--white); line-height: 1.55; font-style: normal; margin-bottom: 24px; }
+.quote-attr { font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 0.06em; }
+.quote-attr strong { color: var(--green); font-weight: 600; }
+
+.cta-section { padding: 80px 24px 100px; text-align: center; background: var(--white); }
+.cta-inner { max-width: 500px; margin: 0 auto; }
+.cta-inner h2 { font-family: 'Sora', sans-serif; font-size: clamp(22px, 3.5vw, 34px); font-weight: 800; color: var(--navy); line-height: 1.2; margin-bottom: 14px; letter-spacing: -0.01em; }
+.cta-inner p { font-size: 15px; color: var(--gray-600); margin-bottom: 32px; line-height: 1.65; }
+.cta-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--blue); color: var(--white); font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; padding: 16px 36px; border-radius: 100px; text-decoration: none; box-shadow: 0 4px 20px rgba(43,95,217,0.3); }
+
+.footer { background: var(--navy); padding: 28px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.footer-logo { height: 26px; width: auto; opacity: 0.8; }
+.footer-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.2); }
+.footer-text { font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 0.06em; }
+.footer-text span { color: var(--green); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .fade-up { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .fade-up:nth-child(2) { transition-delay: 0.08s; }
+  .fade-up:nth-child(3) { transition-delay: 0.16s; }
+}
+@media (max-width: 580px) {
+  .ab-grid { grid-template-columns: 1fr; }
+  .ab-col.before { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .hero-meta { gap: 20px; }
+  .cap-bar { gap: 8px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <img class="nav-logo" src="logo.png" alt="The CAP Lead">
+  <a class="nav-cta" href="https://calendar.app.google/N97gKB7XvUp3aGWVA" target="_blank">Agendar llamada</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="badge"><span class="badge-dot"></span>Caso de Éxito · The CAP Lead</div>
+    <div class="cap-bar">
+      <div class="cap-pill c">C · Claridad</div>
+      <div class="cap-pill a">A · Autogestión</div>
+      <div class="cap-pill p">P · Potenciación</div>
+    </div>
+    <h1>Tenía el producto,<br>la experiencia y las ganas.<br>Le faltaba <em>el sistema.</em></h1>
+    <p class="hero-sub">Cómo una emprendedora pasó de tener todo el material listo a lanzar su marca personal con estrategia, ICP definido y contenido que convierte.</p>
+    <div class="hero-meta">
+      <div class="meta-item"><span class="meta-label">Perfil</span><span class="meta-value">Emprendedora · Marca personal</span></div>
+      <div class="meta-item"><span class="meta-label">Sector</span><span class="meta-value">Consultoría · Servicios</span></div>
+      <div class="meta-item"><span class="meta-label">Programa</span><span class="meta-value">Booster CAP</span></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--white);">
+  <div class="section">
+    <p class="section-label">El problema</p>
+    <h2>Material, experiencia y energía. Sin claridad de a quién, para qué y cómo.</h2>
+    <p>Paola llegó porque me seguía en LinkedIn y reconocía algo en lo que yo hacía: la obsesión por la estructura. Ella ofrecía algo similar a lo que yo enseño — pero desde su propia perspectiva y experiencia.</p>
+    <p>La escuché. Y lo que encontré no fue falta de talento ni de contenido. Fue exceso de recursos sin orden: tenía metodología, materiales, trayectoria comprobada, ideas de producto. Pero no sabía exactamente a quién le hablaba, qué le ofrecía primero ni cómo posicionarse sin sonar genérica.</p>
+    <p>El problema clásico del emprendedor con mucho dentro y sin hoja de ruta para sacarlo. Le propuse estructurarlo juntos.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="ab-section">
+  <div class="ab-inner">
+    <p class="section-label">Diagnóstico</p>
+    <h2 style="color:var(--white)">Del punto A al punto B.</h2>
+    <div class="ab-grid">
+      <div class="ab-col before">
+        <div class="ab-col-header"><span class="ab-dot red"></span><span class="ab-col-title">Punto A — Estado inicial</span></div>
+        <div class="ab-item"><div class="ab-dimension">Claridad</div><div class="ab-text">Sin ICP definido. Hablaba para todos y no conectaba con nadie en específico.</div></div>
+        <div class="ab-item"><div class="ab-dimension">Oferta</div><div class="ab-text">Mucho material disponible pero sin jerarquía. No sabía qué proponer primero.</div></div>
+        <div class="ab-item"><div class="ab-dimension">LinkedIn</div><div class="ab-text">Perfil sin posicionamiento claro. Titular genérico. Sin estrategia de contenido.</div></div>
+        <div class="ab-item"><div class="ab-dimension">Ejecución</div><div class="ab-text">Iniciativas dispersas. Energía alta pero sin sistema que la canalizara.</div></div>
+      </div>
+      <div class="ab-col after">
+        <div class="ab-col-header"><span class="ab-dot green"></span><span class="ab-col-title">Punto B — Estado actual</span></div>
+        <div class="ab-item"><div class="ab-dimension">Claridad</div><div class="ab-text">ICP definido con precisión. Sabe exactamente a quién le habla y qué problema le resuelve.</div></div>
+        <div class="ab-item"><div class="ab-dimension">Oferta</div><div class="ab-text">Oferta inicial clara y estructurada. Roadmap de producto definido con prioridades.</div></div>
+        <div class="ab-item"><div class="ab-dimension">LinkedIn</div><div class="ab-text">Perfil optimizado, titular con resultado primero, estrategia de contenido con pilares activos.</div></div>
+        <div class="ab-item"><div class="ab-dimension">Ejecución</div><div class="ab-text">Contenido con estrategia, pruebas A-B, seguimiento de engagement y ajustes continuos.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--off-white);">
+  <div class="section">
+    <p class="section-label">La intervención</p>
+    <h2>El framework CAP aplicado de principio a fin.</h2>
+    <p>Este caso muestra el modelo completo — Claridad, Autogestión y Potenciación — aplicado a una emprendedora en fase de lanzamiento.</p>
+    <div class="cap-phases">
+
+      <div class="cap-phase fade-up">
+        <div class="cap-phase-left">
+          <div class="cap-phase-num c">C</div>
+          <div class="cap-phase-line c"></div>
+        </div>
+        <div class="cap-phase-content">
+          <div class="cap-phase-tag c">Claridad — Fase 1</div>
+          <h3>Diagnóstico, ICP y oferta</h3>
+          <p>La primera sesión (gratuita) fue un diagnóstico real: qué tenía, qué no tenía, y qué orden necesitaba. El entregable inmediato fue un plan de acción de alto nivel.</p>
+          <div class="cap-phase-bullets">
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Definición del ICP exacto — perfil, dolor, contexto</div>
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Estructura de oferta inicial y jerarquía de producto</div>
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Optimización de LinkedIn: titular, extracto y banner</div>
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Roadmap de lanzamiento con prioridades claras</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cap-phase fade-up">
+        <div class="cap-phase-left">
+          <div class="cap-phase-num a">A</div>
+          <div class="cap-phase-line a"></div>
+        </div>
+        <div class="cap-phase-content">
+          <div class="cap-phase-tag a">Autogestión — Fase 2</div>
+          <h3>Ejecución con criterio propio</h3>
+          <p>Una vez con claridad, Paola comenzó a ejecutar con autonomía. La mentoría pasó de construir estructura a acompañar la implementación.</p>
+          <div class="cap-phase-bullets">
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Estrategia de contenido con pilares definidos por ICP</div>
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Material de valor a disposición de su audiencia</div>
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Sistema de seguimiento semanal en Notion con indicadores</div>
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Sesiones de revisión para ajustar lo que no estaba dando resultado</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cap-phase fade-up">
+        <div class="cap-phase-left">
+          <div class="cap-phase-num p">P</div>
+          <div class="cap-phase-line p"></div>
+        </div>
+        <div class="cap-phase-content">
+          <div class="cap-phase-tag p">Potenciación — Fase 3</div>
+          <h3>Escala con datos, no con intuición</h3>
+          <p>Con contenido activo y audiencia en crecimiento, pasamos a optimizar: qué conecta, qué no, qué multiplicar.</p>
+          <div class="cap-phase-bullets">
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Pruebas A-B de formatos y hooks de contenido</div>
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Análisis de engagement por tipo de publicación</div>
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Prospectos calificados entrando por LinkedIn de forma consistente</div>
+            <div class="cap-phase-bullet"><div class="cap-bullet-dot"></div>Ajuste continuo de posicionamiento con base en respuesta de audiencia</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="evidence-wrap">
+  <p class="evidence-label">La prueba</p>
+  <p class="evidence-caption">Este fue el entregable de su sesión de diagnóstico gratuita — antes de ser cliente. El nivel de detalle es el mismo desde el primer día.</p>
+  <div class="evidence-frame">
+    <img src="mail-paola.jpg" alt="Seguimiento semanal — The CAP Lead">
+  </div>
+</div>
+
+<hr class="divider">
+
+<section style="background:var(--white);">
+  <div class="section">
+    <p class="section-label">Resultados</p>
+    <h2>Lo que cambió.</h2>
+    <p>El caso de Paola demuestra algo importante: el framework CAP no es solo para managers o directivos. Es para cualquiera que tenga todo dentro pero no sepa en qué orden sacarlo.</p>
+    <div class="results-grid">
+      <div class="result-card fade-up"><div class="result-icon">🎯</div><div class="result-label">ICP</div><div class="result-text">Sabe exactamente a quién le habla. Su contenido conecta porque habla a un dolor real.</div></div>
+      <div class="result-card fade-up"><div class="result-icon">🔵</div><div class="result-label">LinkedIn</div><div class="result-text">Perfil optimizado, titular con resultado primero y presencia activa con estrategia.</div></div>
+      <div class="result-card fade-up"><div class="result-icon">📈</div><div class="result-label">Contenido</div><div class="result-text">Pruebas A-B activas. Engagement en crecimiento. Ajustes con datos, no con corazonadas.</div></div>
+      <div class="result-card fade-up"><div class="result-icon">🚀</div><div class="result-label">Pipeline</div><div class="result-text">Prospectos calificados entrando de forma consistente desde LinkedIn.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="quote-section">
+  <div class="quote-inner">
+    <span class="quote-mark">"</span>
+    <blockquote>Tenía todo el material. Lo que me faltaba era saber en qué orden usarlo — y con quién hablar primero.</blockquote>
+    <p class="quote-attr"><strong>Paola</strong> · Emprendedora · Consultoría y marca personal · Cliente activa</p>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>¿Tienes el talento pero no el sistema para mostrarlo?</h2>
+    <p>El primer paso es una sesión de diagnóstico de 45 minutos sin costo. Te llevas un plan de acción concreto — aunque no sigamos trabajando juntos.</p>
+    <a href="https://calendar.app.google/N97gKB7XvUp3aGWVA" class="cta-btn" target="_blank">
+      Agenda tu sesión gratuita
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+    </a>
+  </div>
+</section>
+
+<footer class="footer">
+  <img class="footer-logo" src="logo.png" alt="The CAP Lead">
+  <div class="footer-divider"></div>
+  <p class="footer-text">Claridad · Autogestión · <span>Potenciación</span></p>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
