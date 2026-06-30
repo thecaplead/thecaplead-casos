@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso de Éxito — The CAP Lead</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue: #2B5FD9; --blue-dark: #1A3E99;
+  --navy: #0D1B3E; --green: #00D4AA; --green-dim: #00a888;
+  --orange: #FF9500; --gold: #F5C842;
+  --white: #FFFFFF; --off-white: #F7F9FC;
+  --gray-200: #E8ECF2; --gray-400: #8896A8; --gray-600: #4A5568; --gray-dark: #4A4A4A;
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: var(--off-white); color: var(--gray-dark); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(13,27,62,0.96); backdrop-filter: blur(12px); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { height: 30px; width: auto; }
+.nav-cta { display: inline-flex; align-items: center; gap: 8px; background: var(--green); color: var(--navy); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; padding: 8px 20px; border-radius: 100px; text-decoration: none; }
+
+.hero { background: linear-gradient(150deg, var(--navy) 0%, #0F2860 60%, #1A3E99 100%); min-height: 92vh; display: flex; flex-direction: column; justify-content: center; padding: 120px 24px 80px; position: relative; overflow: hidden; }
+.hero-glow { position: absolute; top: -200px; right: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(0,212,170,0.12) 0%, transparent 65%); pointer-events: none; }
+.hero-inner { max-width: 740px; margin: 0 auto; position: relative; z-index: 1; }
+.badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,212,170,0.12); border: 1px solid rgba(0,212,170,0.3); color: var(--green); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 16px; border-radius: 100px; margin-bottom: 28px; }
+.badge-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(32px, 5vw, 54px); font-weight: 800; color: var(--white); line-height: 1.12; letter-spacing: -0.02em; margin-bottom: 24px; }
+.hero h1 em { font-style: normal; color: var(--green); }
+.hero-sub { font-size: 17px; color: rgba(255,255,255,0.6); max-width: 540px; margin-bottom: 48px; line-height: 1.65; }
+.hero-stats { display: flex; gap: 24px; flex-wrap: wrap; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1); }
+.hero-stat { display: flex; flex-direction: column; gap: 4px; }
+.hero-stat-num { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: var(--green); letter-spacing: -0.02em; }
+.hero-stat-label { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 0.06em; }
+
+.section { max-width: 740px; margin: 0 auto; padding: 80px 24px; }
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; width: 32px; height: 1.5px; background: var(--blue); opacity: 0.4; }
+.section h2 { font-family: 'Sora', sans-serif; font-size: clamp(22px, 3.5vw, 34px); font-weight: 700; color: var(--navy); line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 20px; }
+.section p { font-size: 16px; color: var(--gray-600); margin-bottom: 16px; line-height: 1.8; }
+.section p:last-child { margin-bottom: 0; }
+.divider { border: none; height: 1px; background: var(--gray-200); max-width: 740px; margin: 0 auto; }
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; gap: 0; margin-top: 36px; }
+.timeline-item { display: grid; grid-template-columns: 44px 1fr; gap: 0; }
+.timeline-left { display: flex; flex-direction: column; align-items: center; }
+.timeline-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--green); border: 3px solid var(--navy); flex-shrink: 0; margin-top: 4px; }
+.timeline-line { width: 2px; flex: 1; background: var(--gray-200); margin: 4px auto; min-height: 24px; }
+.timeline-item:last-child .timeline-line { display: none; }
+.timeline-content { padding: 0 0 32px 20px; }
+.timeline-date { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); margin-bottom: 4px; }
+.timeline-content h3 { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.timeline-content p { font-size: 14px; color: var(--gray-600); margin-bottom: 0; line-height: 1.6; }
+
+/* CAP phases */
+.cap-section { background: var(--navy); padding: 80px 24px; }
+.cap-inner { max-width: 740px; margin: 0 auto; }
+.cap-inner .section-label { color: var(--green); }
+.cap-inner .section-label::after { background: var(--green); }
+.cap-inner h2 { font-family: 'Sora', sans-serif; font-size: clamp(22px, 3.5vw, 34px); font-weight: 700; color: var(--white); line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.01em; }
+.cap-inner > p { font-size: 15px; color: rgba(255,255,255,0.55); margin-bottom: 40px; line-height: 1.7; }
+
+.cap-cards { display: flex; flex-direction: column; gap: 16px; }
+.cap-card { border-radius: 16px; padding: 28px 24px; border: 1px solid rgba(255,255,255,0.08); }
+.cap-card.c { background: rgba(0,212,170,0.07); border-color: rgba(0,212,170,0.2); }
+.cap-card.a { background: rgba(43,95,217,0.07); border-color: rgba(43,95,217,0.2); }
+.cap-card.p { background: rgba(245,200,66,0.07); border-color: rgba(245,200,66,0.2); }
+.cap-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.cap-letter { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 800; flex-shrink: 0; }
+.cap-letter.c { background: rgba(0,212,170,0.2); color: var(--green); }
+.cap-letter.a { background: rgba(43,95,217,0.2); color: #7BA3FF; }
+.cap-letter.p { background: rgba(245,200,66,0.2); color: var(--gold); }
+.cap-card-title { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 700; }
+.cap-card.c .cap-card-title { color: var(--green); }
+.cap-card.a .cap-card-title { color: #7BA3FF; }
+.cap-card.p .cap-card-title { color: var(--gold); }
+.cap-card-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+.cap-bullets { display: flex; flex-direction: column; gap: 8px; }
+.cap-bullet { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+.cap-bullet-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+.cap-card.c .cap-bullet-dot { background: var(--green); }
+.cap-card.a .cap-bullet-dot { background: #7BA3FF; }
+.cap-card.p .cap-bullet-dot { background: var(--gold); }
+
+/* KPIs */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 14px; margin-top: 36px; }
+.kpi-card { background: var(--white); border: 1px solid var(--gray-200); border-left: 3px solid var(--blue); border-radius: 14px; padding: 20px 18px; }
+.kpi-name { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 4px; }
+.kpi-value { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+.kpi-desc { font-size: 11px; color: var(--gray-400); line-height: 1.4; }
+
+/* Evidence */
+.evidence-wrap { max-width: 740px; margin: 0 auto; padding: 0 24px 80px; }
+.evidence-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.evidence-label::after { content: ''; width: 32px; height: 1.5px; background: var(--blue); opacity: 0.4; }
+.evidence-caption { font-size: 14px; color: var(--gray-600); margin-bottom: 20px; line-height: 1.6; }
+.evidence-frame { border-radius: 20px; overflow: hidden; box-shadow: 0 12px 40px rgba(13,27,62,0.12); border: 1px solid var(--gray-200); max-width: 360px; }
+.evidence-frame img { width: 100%; display: block; }
+
+/* Results */
+.results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 14px; margin-top: 36px; }
+.result-card { background: var(--white); border: 1px solid var(--gray-200); border-left: 3px solid var(--blue); border-radius: 14px; padding: 24px 20px; }
+.result-icon { font-size: 20px; margin-bottom: 12px; }
+.result-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+.result-text { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); line-height: 1.4; }
+
+.quote-section { background: linear-gradient(135deg, var(--navy) 0%, #0F2860 100%); padding: 80px 24px; }
+.quote-inner { max-width: 580px; margin: 0 auto; text-align: center; }
+.quote-mark { font-family: 'Sora', sans-serif; font-size: 72px; line-height: 0.6; color: var(--green); opacity: 0.35; display: block; margin-bottom: 24px; }
+blockquote { font-family: 'Sora', sans-serif; font-size: clamp(16px, 2.5vw, 22px); font-weight: 600; color: var(--white); line-height: 1.55; font-style: normal; margin-bottom: 24px; }
+.quote-attr { font-size: 12px; color: rgba(255,255,255,0.4); }
+.quote-attr strong { color: var(--green); font-weight: 600; }
+
+.cta-section { padding: 80px 24px 100px; text-align: center; background: var(--white); }
+.cta-inner { max-width: 500px; margin: 0 auto; }
+.cta-inner h2 { font-family: 'Sora', sans-serif; font-size: clamp(22px, 3.5vw, 34px); font-weight: 800; color: var(--navy); line-height: 1.2; margin-bottom: 14px; letter-spacing: -0.01em; }
+.cta-inner p { font-size: 15px; color: var(--gray-600); margin-bottom: 32px; line-height: 1.65; }
+.cta-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--blue); color: var(--white); font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; padding: 16px 36px; border-radius: 100px; text-decoration: none; box-shadow: 0 4px 20px rgba(43,95,217,0.3); }
+
+.footer { background: var(--navy); padding: 28px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.footer-logo { height: 26px; width: auto; opacity: 0.8; }
+.footer-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.2); }
+.footer-text { font-size: 12px; color: rgba(255,255,255,0.35); }
+.footer-text span { color: var(--green); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .fade-up { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .fade-up:nth-child(2) { transition-delay: 0.08s; }
+  .fade-up:nth-child(3) { transition-delay: 0.16s; }
+}
+@media (max-width: 580px) { .hero-stats { gap: 20px; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <img class="nav-logo" src="logo.png" alt="The CAP Lead">
+  <a class="nav-cta" href="https://calendar.app.google/N97gKB7XvUp3aGWVA" target="_blank">Agendar llamada</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="badge"><span class="badge-dot"></span>Caso propio · The CAP Lead en acción</div>
+    <h1>El framework que enseño<br>lo aplico primero<br><em>en mis propios negocios.</em></h1>
+    <p class="hero-sub">Cómo lancé una marca de e-commerce en Amazon desde cero, con menos de 5 horas semanales, un equipo remoto y el mismo sistema operativo que uso con mis clientes.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num">30</div><div class="hero-stat-label">unidades · primer mes completo</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">+2,900%</div><div class="hero-stat-label">vs mes anterior</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">6 días</div><div class="hero-stat-label">de listing a primera venta</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">&lt;5 hrs</div><div class="hero-stat-label">semanales dedicadas</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTEXTO -->
+<section style="background:var(--white);">
+  <div class="section">
+    <p class="section-label">El contexto</p>
+    <h2>No hablo de lo que no he vivido.</h2>
+    <p>Llevo 20 años transformando operaciones en empresas. Pero hay algo que siempre digo a mis clientes: el sistema tiene que funcionar en la realidad, no solo en el papel.</p>
+    <p>Hace 6 meses arranqué el lanzamiento de una marca privada en Amazon USA — un producto en un nicho deportivo de alta barrera de entrada, con competencia analizada, proveedor en China negociado directamente y un VA en Pakistán como único colaborador.</p>
+    <p>La restricción era real: menos de 5 horas semanales disponibles. El resto de mi tiempo lo ocupan mi trabajo corporativo, mis mentorías y mis otras operaciones. Sin sistema, eso es imposible. Con sistema, es exactamente lo que mostraré en este caso.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- TIMELINE -->
+<section style="background:var(--off-white);">
+  <div class="section">
+    <p class="section-label">La línea de tiempo</p>
+    <h2>6 meses de construcción. 6 días a la primera venta.</h2>
+    <div class="timeline">
+      <div class="timeline-item fade-up">
+        <div class="timeline-left"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+        <div class="timeline-content">
+          <div class="timeline-date">Meses 1–4 · Preparación</div>
+          <h3>Investigación, selección de producto y proveedor</h3>
+          <p>Análisis de mercado con Helium 10: nichos con alta barrera de entrada, competencia medible, diferenciador claro. Negociación directa con proveedor en China. Sin producto correcto, no hay sistema que salve el lanzamiento.</p>
+        </div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-left"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+        <div class="timeline-content">
+          <div class="timeline-date">Mes 5 · Logística</div>
+          <h3>Producción, envío y activación del listing</h3>
+          <p>Coordinación de producción, control de calidad, envío a almacén de Amazon USA. El VA gestiona toda la logística. Yo reviso los puntos de decisión críticos, no el proceso completo.</p>
+        </div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-left"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+        <div class="timeline-content">
+          <div class="timeline-date">25 mayo · Lanzamiento</div>
+          <h3>Primer día en Amazon</h3>
+          <p>Listing activo con fotos optimizadas, descripción con keywords estratégicas y campañas de PPC iniciales. Primer día sin ventas — esperado.</p>
+        </div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-left"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+        <div class="timeline-content">
+          <div class="timeline-date">31 mayo · Día 6</div>
+          <h3>Primera venta</h3>
+          <p>No fue al azar. Fue el resultado de la estructura previa: producto con demanda real, listing con conversión optimizada y campañas bien segmentadas.</p>
+        </div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-left"><div class="timeline-dot"></div><div class="timeline-line"></div></div>
+        <div class="timeline-content">
+          <div class="timeline-date">Junio · Optimización</div>
+          <h3>Ajuste y aceleración</h3>
+          <p>Revisión de campañas PPC, optimización de fotos, inicio del proceso de marca registrada en Amazon Brand Registry. 29 unidades en el primer mes completo. +2,800% vs el mes anterior.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAP APLICADO -->
+<section class="cap-section">
+  <div class="cap-inner">
+    <p class="section-label">El framework en acción</p>
+    <h2>Claridad · Autogestión · Potenciación</h2>
+    <p>El mismo modelo que aplico con mis clientes, ejecutado en mi propio negocio. No como teoría — como operación real.</p>
+    <div class="cap-cards">
+      <div class="cap-card c fade-up">
+        <div class="cap-card-header">
+          <div class="cap-letter c">C</div>
+          <div><div class="cap-card-title">Claridad</div><div class="cap-card-sub">Antes de invertir un peso, saber exactamente qué y por qué</div></div>
+        </div>
+        <div class="cap-bullets">
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Análisis de nicho con Helium 10: demanda real, competencia medible, barrera de entrada alta</div>
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Selección de producto con diferenciador claro — calidad, diseño minimalista, durabilidad</div>
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Análisis profundo de competencia antes de cualquier inversión</div>
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Criterio de decisión documentado: sin nicho correcto, no hay lanzamiento</div>
+        </div>
+      </div>
+      <div class="cap-card a fade-up">
+        <div class="cap-card-header">
+          <div class="cap-letter a">A</div>
+          <div><div class="cap-card-title">Autogestión</div><div class="cap-card-sub">Menos de 5 hrs/semana sin perder control</div></div>
+        </div>
+        <div class="cap-bullets">
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>VA en Pakistán gestiona logística, envíos y ejecución de campañas PPC para 2 tiendas (4 productos)</div>
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Monitoreo diario de la tienda: 10 minutos, indicadores clave en dashboard propio</div>
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Revisión quincenal de métricas: ACoS, ROAS, CTR, CVR, Buy Box</div>
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Comunicación asincrónica: observaciones al cierre del día, ejecución por el VA</div>
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Negociación directa con proveedores en China — yo lidero, él coordina la logística</div>
+        </div>
+      </div>
+      <div class="cap-card p fade-up">
+        <div class="cap-card-header">
+          <div class="cap-letter p">P</div>
+          <div><div class="cap-card-title">Potenciación</div><div class="cap-card-sub">La primera venta no es el fin — es el inicio del ajuste</div></div>
+        </div>
+        <div class="cap-bullets">
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Optimización de campañas PPC con base en datos de conversión reales</div>
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Mejora de fotos del listing para aumentar CTR</div>
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Inicio de proceso de marca registrada en Amazon Brand Registry</div>
+          <div class="cap-bullet"><div class="cap-bullet-dot"></div>Pipeline de nuevos productos en análisis: mismo criterio, mayor velocidad de decisión</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KPIs QUE MONITOREO -->
+<section style="background:var(--white);">
+  <div class="section">
+    <p class="section-label">Los indicadores</p>
+    <h2>Lo que mido quincenalmente.</h2>
+    <p>No se gestiona lo que no se mide. Estos son los KPIs que reviso cada dos semanas para tomar decisiones de PPC, inventario y posicionamiento.</p>
+    <div class="kpi-grid">
+      <div class="kpi-card fade-up">
+        <div class="kpi-name">ACoS</div>
+        <div class="kpi-value">Advertising Cost of Sale</div>
+        <div class="kpi-desc">% del gasto en publicidad sobre las ventas generadas por anuncios. Objetivo: por debajo del punto de equilibrio.</div>
+      </div>
+      <div class="kpi-card fade-up">
+        <div class="kpi-name">ROAS</div>
+        <div class="kpi-value">Return on Ad Spend</div>
+        <div class="kpi-desc">Ingresos generados por cada dólar invertido en publicidad. Indica la eficiencia de las campañas PPC.</div>
+      </div>
+      <div class="kpi-card fade-up">
+        <div class="kpi-name">CTR</div>
+        <div class="kpi-value">Click-Through Rate</div>
+        <div class="kpi-desc">% de personas que hacen click en el listing al verlo. Indicador de la calidad de la foto principal y título.</div>
+      </div>
+      <div class="kpi-card fade-up">
+        <div class="kpi-name">CVR</div>
+        <div class="kpi-value">Conversion Rate</div>
+        <div class="kpi-desc">% de visitantes que compran. Mide la calidad del listing completo: fotos, descripción, precio y reviews.</div>
+      </div>
+      <div class="kpi-card fade-up">
+        <div class="kpi-name">Buy Box</div>
+        <div class="kpi-value">% de posesión</div>
+        <div class="kpi-desc">% del tiempo que el listing gana el botón de compra destacado. Crítico para las ventas en Amazon.</div>
+      </div>
+      <div class="kpi-card fade-up">
+        <div class="kpi-name">Unidades</div>
+        <div class="kpi-value">Velocidad de ventas</div>
+        <div class="kpi-desc">Unidades vendidas por período. Determina el ritmo de reabastecimiento y la proyección de inventario.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVIDENCIA -->
+<div class="evidence-wrap">
+  <p class="evidence-label">La evidencia</p>
+  <p class="evidence-caption">Datos reales del primer mes completo en Amazon — captura directa del panel de Amazon Seller Central. Las cifras de ingresos se omiten por confidencialidad.</p>
+  <div class="evidence-frame">
+    <img src="amazon-sandara.png" alt="Amazon Seller Central — Primer mes Sandara Boost">
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- RESULTADOS -->
+<section style="background:var(--off-white);">
+  <div class="section">
+    <p class="section-label">Resultados</p>
+    <h2>Lo que dice el primer mes.</h2>
+    <p>No es un resultado extraordinario — es un resultado consistente. Eso es exactamente lo que busca el sistema: ventas predecibles, no golpes de suerte.</p>
+    <div class="results-grid">
+      <div class="result-card fade-up"><div class="result-icon">📦</div><div class="result-label">Unidades</div><div class="result-text">30 unidades vendidas en el primer mes completo.</div></div>
+      <div class="result-card fade-up"><div class="result-icon">📈</div><div class="result-label">Crecimiento</div><div class="result-text">+2,900% vs el mes de lanzamiento.</div></div>
+      <div class="result-card fade-up"><div class="result-icon">⚡</div><div class="result-label">Velocidad</div><div class="result-text">Primera venta en 6 días desde el listing.</div></div>
+      <div class="result-card fade-up"><div class="result-icon">⏱️</div><div class="result-label">Dedicación</div><div class="result-text">Menos de 5 horas semanales de tiempo del dueño.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <div class="quote-inner">
+    <span class="quote-mark">"</span>
+    <blockquote>El sistema no me hace el trabajo. Me permite enfocarme solo en las decisiones que yo debo tomar — y dejar el resto al proceso.</blockquote>
+    <p class="quote-attr"><strong>Fer Balcázar</strong> · Fundador · The CAP Lead</p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>¿Quieres construir algo tuyo fuera de tu empleo?</h2>
+    <p>El sistema que apliqué aquí es el mismo que trabajo con mis clientes. Empieza con un diagnóstico de 45 minutos sin costo — y sal con un plan de acción concreto.</p>
+    <a href="https://calendar.app.google/N97gKB7XvUp3aGWVA" class="cta-btn" target="_blank">
+      Agenda tu sesión gratuita
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+    </a>
+  </div>
+</section>
+
+<footer class="footer">
+  <img class="footer-logo" src="logo.png" alt="The CAP Lead">
+  <div class="footer-divider"></div>
+  <p class="footer-text">Claridad · Autogestión · <span>Potenciación</span></p>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
